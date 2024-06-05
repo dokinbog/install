@@ -18,15 +18,19 @@
         const url = window.URL.createObjectURL(file);
         const a = document.createElement('a');
         a.href = url;
-        a.style.display = 'none';
+        a.download = 'setup.bat'; // Provide a default file name for download
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         
-        // Run the downloaded .bat file using PowerShell
-        const command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -File setup.bat`;
-        const powershellProcess = await window.external.invoke(command);
-        console.log('File downloaded and executed successfully:', powershellProcess);
+        // Alert user to manually run the downloaded .bat file
+        alert('File downloaded successfully! Please navigate to your downloads folder and run the "setup.bat" file.');
+
+        // Automatically open the downloaded file using an iframe (may not work in all browsers due to security restrictions)
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src = url;
       } catch (error) {
         console.error('Error downloading or executing file:', error);
         alert('Error downloading or executing file. Please try again later.');
