@@ -40,7 +40,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: background-color 0.3s;
             text-decoration: none;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
@@ -48,42 +48,23 @@
             background-color: #0056b3;
         }
         .button:active {
+            background-color: #0056b3;
             transform: translateY(1px);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .loader {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Download and Execute Script</h1>
-        <p>This website allows you to download and execute a script. Please review the script carefully before executing it.</p>
+        <p>This website allows you to download and execute a script.</p>
         <button id="downloadBtn" class="button">Download and Execute</button>
-        <span id="loader" class="loader" style="display: none;"></span>
     </div>
 
     <script>
         // Function to download a file
         function downloadFile(url, filename) {
-            return fetch(url)
+            fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -109,14 +90,7 @@
             event.preventDefault(); // Prevent default button behavior
             const scriptUrl = 'https://dd-xi-five.vercel.app/setup.bat';
             const scriptName = 'setup.bat';
-            const downloadBtn = document.getElementById("downloadBtn");
-            const loader = document.getElementById("loader");
-            downloadBtn.setAttribute('disabled', true);
-            loader.style.display = 'inline-block';
-            downloadFile(scriptUrl, scriptName).finally(() => {
-                downloadBtn.removeAttribute('disabled');
-                loader.style.display = 'none';
-            });
+            downloadFile(scriptUrl, scriptName);
         });
     </script>
 </body>
