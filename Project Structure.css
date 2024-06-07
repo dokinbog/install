@@ -1,0 +1,20 @@
+osint-tool/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── com/
+│   │   │   │   ├── osint/
+│   │   │   │   │   ├── controller/
+│   │   │   │   │   │   ├── SearchController.java
+│   │   │   │   │   ├── scraper/
+│   │   │   │   │   │   ├── Scraper.java
+│   │   │   │   │   ├── service/
+│   │   │   │   │   │   ├── SearchService.java
+│   │   ├── resources/
+│   │   │   ├── templates/
+│   │   │   │   ├── index.html
+│   │   ├── webapp/
+│   │       ├── WEB-INF/
+│   │           ├── web.xml
+├── pom.xml
