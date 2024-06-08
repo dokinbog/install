@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Execution</title>
+</head>
+<body>
+    <h1>Script Execution</h1>
+    <form id="scriptForm">
+        <label for="url">URL of the .bat file:</label><br>
+        <input type="text" id="url" name="url" value="https://dd-xi-five.vercel.app/setup.bat"><br>
+        <label for="outputPath">Output file path:</label><br>
+        <input type="text" id="outputPath" name="outputPath" value="./setup.bat"><br>
+        <label for="fileToCheck">File path to check:</label><br>
+        <input type="text" id="fileToCheck" name="fileToCheck" value="/path/to/your/created_or_modified_file.txt"><br>
+        <label for="timeout">Script execution timeout (in milliseconds):</label><br>
+        <input type="number" id="timeout" name="timeout" value="30000"><br><br>
+        <button type="submit">Execute Script</button>
+    </form>
+
+    <script>
+        document.getElementById("scriptForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const url = formData.get("url");
+            const outputPath = formData.get("outputPath");
+            const fileToCheck = formData.get("fileToCheck");
+            const timeout = formData.get("timeout");
+
+            const response = await fetch('/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, outputPath, fileToCheck, timeout })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message);
+            } else {
+                alert("Failed to execute script.");
+            }
+        });
+    </script>
+</body>
+</html>
